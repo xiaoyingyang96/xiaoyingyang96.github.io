@@ -2,7 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
-      "/posts/welcome/index.html",
+      "/posts/Anomaly Detection/index.html",
       "/posts/clustering penguins/index.html",
       "/posts/fetal health classification/index.html",
       "/posts/Predicting humidity with Support Vector Regression/index.html",
