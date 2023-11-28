@@ -1,0 +1,20 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  title: "xiaoyingyang96.github.io"
+  navbar:
+    right:
+      - about.qmd
+      - icon: github
+        href: https://github.com/xiaoyingyang96
+      - icon: LinkedIn
+        href: http://www.linkedin.com/in/xiaoying-yang-92110a156
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+
+editor: visual
+

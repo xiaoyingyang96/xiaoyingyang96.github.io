@@ -1,0 +1,17 @@
+---
+title: "Xiaoying Yang"
+image: head.jpg
+about:
+  template: jolla
+  links:
+    - icon: linkedin
+      text: LinkedIn
+      href: http://www.linkedin.com/in/xiaoying-yang-92110a156
+    - icon: github
+      text: Github
+      href: https://github.com/xiaoyingyang96
+---
+
+This blog was created for the final project of my machine learning class in Fall 2023 and will be continuously updated.
+
+As a PhD student at Virginia Tech, I am interested in researching Brain-Computer Interfaces (BCI) and Augmented Reality (AR) in engineering fields. In my daily life, I enjoy playing the piano and violin, as well as various ball games! Living the questions is my joy. :)
