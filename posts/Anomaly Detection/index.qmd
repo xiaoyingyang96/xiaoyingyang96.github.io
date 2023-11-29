@@ -1,0 +1,100 @@
+---
+title: "Chocolate Ratings: Anomaly Detection Analysis using DBScan"
+author: "Xiaoying Yang"
+date: "2023-11-28"
+categories: [ code, analysis]
+image: "choc.jpeg"
+---
+
+![](choc.jpeg)
+
+# Anomaly Detection
+
+Anomaly detection is a process aimed at identifying objects or behaviors that deviate significantly from expected patterns. These anomalies, often referred to as outliers, are crucial in a wide array of fields due to their potential to indicate critical, unusual, or suspicious activities. For example, in electricity transmission, a drastic change in energy consumption compared to normal levels can signal a suspicious transmission. In financial sectors like insurance and banking, anomaly detection plays a pivotal role in fraud detection, helping to identify irregular transactions or claims that may indicate fraudulent activities.
+
+Anomaly detection typically deals with three types of outliers: global outliers, which are data points significantly different from the rest of the data; contextual outliers, which are abnormal in a specific context or condition; and collective outliers, where a collection of related data points is anomalous when considered together, even though the individual points may not be outliers.
+
+In this blog, we will utilize the DBSCAN clustering algorithm to detect anomalies in our dataset of chocolate bars. Our aim is to analyze and understand the factors contributing to the low ratings of certain chocolates.
+
+# About the Dataset
+
+Chocolate stands as one of the most beloved confections worldwide, with the United States alone consuming over 2.8 billion pounds annually. However, the quality and appeal of chocolate bars can vary significantly. This dataset provides an insightful look into this diversity by featuring expert evaluations of over 1,700 chocolate bars. It includes details such as the regional origin of each bar, the cocoa percentage, the type of chocolate bean, and the bean's origin. These chocolates are assessed based on a blend of objective qualities and subjective taste interpretations. It's important to note that each rating reflects the experience with a single bar from a specific batch. To enrich this context, batch numbers, vintages, and review dates are also documented in the database whenever available.
+
+# DBSCAN
+
+DBSCAN, short for Density-Based Spatial Clustering of Applications with Noise, is a popular clustering algorithm renowned for its effectiveness in identifying high-density areas in a dataset while distinguishing the low-density regions as outliers or anomalies. Unlike traditional clustering methods that require pre-specification of the number of clusters, DBSCAN autonomously determines the clusters based on two key parameters: the minimum number of points required to form a dense region (MinPts) and a distance threshold (Epsilon) which dictates how close points must be to be considered part of a cluster. This makes DBSCAN particularly adept at handling datasets with complex structures and noise. In anomaly detection, DBSCAN excels by isolating anomalies as points that do not belong to any cluster. These points are typically in sparse areas and significantly deviate from the dense clusters, indicating potential anomalies. This feature makes DBSCAN a powerful tool for unearthing unusual patterns or outliers in various data-driven applications, from fraud detection to system health monitoring. Here are steps applying DBSCAN in anomaly detection:
+
+1.  **Data preparation**
+2.  **Choosing parameters**: Epsilon $\epsilon$ (maximum distance between two points for them to be considered in the same neighborhood), MinPts (minimum number of points required to form a cluster)
+3.  **Running DBSCAN**
+4.  **Identifying anomalies**: Extract noise points for further analysis
+5.  **Analysis and interpretation**: Understand the cause and nature of outliers. Adjust parameters of DBSCAN algorithm and repeat the process, which helps in refining the model to better suit the specific characteristics of the dataset.
+
+```{python}
+# import library
+import pandas as pd
+from sklearn.cluster import DBSCAN
+from sklearn.preprocessing import StandardScaler
+import numpy as np
+
+file_path = 'https://raw.githubusercontent.com/xiaoyingyang96/xiaoyingyang96.github.io/main/Data/flavors_of_cacao.csv'
+data = pd.read_csv(file_path)
+
+# Data preparation
+# Convert 'Cocoa\nPercent' to a float
+data['Cocoa\nPercent'] = data['Cocoa\nPercent'].str.rstrip('%').astype('float') / 100.0
+
+# We'll use 'Cocoa\nPercent' and 'Rating' for anomaly detection
+X = data[['Cocoa\nPercent', 'Rating']]
+
+# Standardizing the data is important for DBSCAN
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+# Applying DBSCAN
+# These parameters (eps and min_samples) can be tuned for different datasets and requirements
+dbscan = DBSCAN(eps=0.5, min_samples=5)
+clusters = dbscan.fit_predict(X_scaled)
+
+# Adding cluster labels to the original data
+data['Cluster'] = clusters
+
+# Identifying anomalies (which are labeled as -1 by DBSCAN)
+anomalies = data[data['Cluster'] == -1]
+
+anomalies_table = anomalies[['Company\xa0\n(Maker-if known)', 'Specific Bean Origin\nor Bar Name', 'Cocoa\nPercent', 'Rating', 'Cluster']].head()
+
+# Generate and print the table
+print(anomalies_table.to_string(index=False))
+```
+
+# Evaluation of results
+
+```{python}
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Plotting the results
+plt.figure(figsize=(10, 6))
+sns.scatterplot(x='Cocoa\nPercent', y='Rating', data=data, hue='Cluster', palette='viridis')
+plt.title('DBSCAN Clustering of Chocolate Bar Ratings')
+plt.xlabel('Cocoa Percent')
+plt.ylabel('Rating')
+plt.legend()
+plt.show()
+
+
+```
+
+The DBSCAN algorithm, known for its proficiency in handling spatial data and distinguishing anomalies, has successfully segregated chocolates into clusters based on cocoa percentage and rating. The anomalies, marked as outliers, are chocolates whose ratings significantly deviate from the norm. As per the DBSCAN algorithm, data points marked as -1 are considered anomalies. These points significantly differ from the others in terms of Cocoa Percent and Rating.
+
+Meanwhile, in the scatter plot, different colors represent different clusters, with anomalies marked in a distinct color (usually purple). From the diagram above, most chocolate bars have ratings clustered within a certain range, while anomalies are scattered outside this range.
+
+Notably, some chocolates with exceptionally high ratings, such as Amedei's "Chuao" and "Toscano Black," are outliers, suggesting that their extraordinary quality or unique characteristics set them apart from the majority. Conversely, chocolates like Artisan du Chocolat's "Venezuela" and "Brazil Rio Doce," with notably low ratings, also emerge as outliers, indicating potential issues with quality or flavor. These results are crucial as they highlight not just the overall distribution of ratings but also pinpoint specific products that are remarkable either for excellence or subpar quality. Such analysis is invaluable for understanding consumer preferences and quality benchmarks in the chocolate industry.
+
+For further investigation, we can adjust parameters of DBSCAN algorithm epsilon and MinPts and repeat the process, which helps in refining the model for a better suit.
+
+# Reference
+
+1.  https://www.kaggle.com/code/tejasrinivas/chocolate-ratings-outlier-analysis-with-dbscan/notebook
+2.  https://www.kaggle.com/datasets/rtatman/chocolate-bar-ratings/code

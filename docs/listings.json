@@ -1,0 +1,13 @@
+[
+  {
+    "listing": "/index.html",
+    "items": [
+      "/posts/Anomaly Detection/index.html",
+      "/posts/clustering penguins/index.html",
+      "/posts/fetal health classification/index.html",
+      "/posts/Predicting humidity with Support Vector Regression/index.html",
+      "/posts/Everything about James-Stein Estimator/index.html",
+      "/posts/How does significance level affect Type I and Type II Errors/index.html"
+    ]
+  }
+]
